@@ -25,15 +25,15 @@ app.post("/sign-up", (req, res) => {
 
 app.post("/tweets", (req, res) => {
     tweets.push(req.body);
-    if(tweets.length > 10){
-        const lastTen = tweets.splice((tweets.length - 10), 10);
-        res.send(lastTen)
-    }
-    res.send(tweet)
+    res.send(`"OK"`)
 });
 
 app.get("/tweets", (req, res) => {
-
+    let showTen = tweets
+    if(tweets.length > 10){
+        showTen = showTen.slice((showTen.length - 10), showTen.length);
+    }
+    res.send(showTen)
 });
 
 app.listen(5000);
