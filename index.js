@@ -29,11 +29,12 @@ app.post("/tweets", (req, res) => {
 });
 
 app.get("/tweets", (req, res) => {
-    let showTen = tweets
+    let showTen = tweets;
     if(tweets.length > 10){
         showTen = showTen.slice((showTen.length - 10), showTen.length);
     }
-    res.send(showTen.reverse())
+    console.log(tweets)
+    res.send(showTen.slice().reverse())//O Slice é para fazer uma "cópia" do array original e depois reverter para não alterar a array original
 });
 
 app.listen(5000);
