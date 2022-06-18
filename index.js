@@ -9,23 +9,32 @@ app.use(express.json());
 const usuarios =[];
 const tweets = [];
 
+function simpleValidation(req){
+    if((typeof req.body == "object") && req.username !== ""){
+       return false
+    }
+    return true
+}
+
 app.post("/sign-up", (req, res) => {
+    if(simpleValidation(req.body) && req.body.avatar !== ""){
+        res.sendStatus(400)
+    };
     usuarios.push(req.body);
-    console.log(usuarios)
-    res.send(`"OK"`);
+    res.status(201).send(`"OK"`)
 });
 
 app.post("/tweets", (req, res) => {
-    let tweetAvatar = usuarios[usuarios.length - 1].avatar
-
+    if(simpleValidation(req.body) && req.body.tweet !== ""){
+        res.sendStatus(400)
+    };
+    const tweetAvatar = usuarios[usuarios.length - 1].avatar
     tweets.push({
         username: req.body.username,
         tweet: req.body.tweet,
         avatar: tweetAvatar
     });
-
-    console.log(tweets)
-    res.send(`"OK"`)
+    res.status(201).send(`"OK"`)
 });
 
 app.get("/tweets", (req, res) => {
