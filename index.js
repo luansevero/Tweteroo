@@ -6,25 +6,25 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const loggedUser ={
-    username: "",
-    avatar: ""
-};
-
-const tweet ={
-    username: "",
-    avatar: ""
-};
-
+const usuarios =[];
 const tweets = [];
 
 app.post("/sign-up", (req, res) => {
-    loggedUser.push(req.body);
-    res.send(loggedUser);
+    usuarios.push(req.body);
+    console.log(usuarios)
+    res.send(`"OK"`);
 });
 
 app.post("/tweets", (req, res) => {
-    tweets.push(req.body);
+    let tweetAvatar = usuarios[usuarios.length - 1].avatar
+
+    tweets.push({
+        username: req.body.username,
+        tweet: req.body.tweet,
+        avatar: tweetAvatar
+    });
+
+    console.log(tweets)
     res.send(`"OK"`)
 });
 
@@ -33,7 +33,7 @@ app.get("/tweets", (req, res) => {
     if(tweets.length > 10){
         showTen = showTen.slice((showTen.length - 10), showTen.length);
     }
-    res.send(showTen)
+    res.send(showTen.reverse())
 });
 
 app.listen(5000);
