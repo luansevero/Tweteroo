@@ -46,4 +46,14 @@ app.get("/tweets", (req, res) => {
     res.send(showTen.slice().reverse())//O Slice é para fazer uma "cópia" do array original e depois reverter para não alterar a array original
 });
 
+app.get("/tweets/:USERNAME", (req, res) => {
+    const loggedUser =  req.params.USERNAME;
+    const userTweets = tweets.filter(tweet => {
+        if(tweet.username === loggedUser){
+            return tweet
+        }
+    })
+    res.send(userTweets)
+});
+
 app.listen(5000);
