@@ -10,7 +10,7 @@ const usuarios =[];
 const tweets = [];
 
 function simpleValidation(req){
-    if((typeof req.body == "object") && req.username !== ""){
+    if((typeof req == "object") && req.username !== ""){
        return false
     }
     return true
@@ -20,7 +20,9 @@ app.post("/sign-up", (req, res) => {
     if(simpleValidation(req.body) && req.body.avatar !== ""){
         res.sendStatus(400)
     };
+    
     usuarios.push(req.body);
+    console.log(usuarios)
     res.status(201).send(`"OK"`)
 });
 
@@ -30,20 +32,29 @@ app.post("/tweets", (req, res) => {
     };
     const tweetAvatar = usuarios[usuarios.length - 1].avatar
     tweets.push({
-        username: req.body.username,
+        username: req.headers.user,
         tweet: req.body.tweet,
         avatar: tweetAvatar
     });
+    console.log(req.body)
     res.status(201).send(`"OK"`)
 });
 
 app.get("/tweets", (req, res) => {
-    let showTen = tweets;
-    if(tweets.length > 10){
-        showTen = showTen.slice((showTen.length - 10), showTen.length);
+    const page = parseInt(req.query.page) //Ok
+    if(page < 1){
+        res.status(400)
+    } // Validação Ok
+    let tenTweets = tweets;
+    if(tenTweets.length > 10){
+        const first = tweets.length - (page * 10);
+        const last = tweets.length - ((page - 1) * 10);
+        tenTweets = tenTweets.slice(first, last);
     }
-    console.log(tweets)
-    res.send(showTen.slice().reverse())//O Slice é para fazer uma "cópia" do array original e depois reverter para não alterar a array original
+    if(page === 1 || page * 10 < tweets.length + 10){
+        res.send(tenTweets.slice().reverse())//O Slice é para fazer uma "cópia" do array original e depois reverter para não alterar a array original
+    } //Para não conseguir ficar atualizando!
+
 });
 
 app.get("/tweets/:USERNAME", (req, res) => {
