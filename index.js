@@ -17,17 +17,16 @@ function simpleValidation(req){
 }
 
 app.post("/sign-up", (req, res) => {
-    if(simpleValidation(req.body) && req.body.avatar !== ""){
+    if(simpleValidation(req.body) || req.body.avatar !== ""){
         res.sendStatus(400)
     };
     
     usuarios.push(req.body);
-    console.log(usuarios)
     res.status(201).send(`"OK"`)
 });
 
 app.post("/tweets", (req, res) => {
-    if(simpleValidation(req.body) && req.body.tweet !== ""){
+    if(simpleValidation(req.body) || req.body.tweet !== ""){
         res.sendStatus(400)
     };
     const tweetAvatar = usuarios[usuarios.length - 1].avatar
@@ -36,25 +35,37 @@ app.post("/tweets", (req, res) => {
         tweet: req.body.tweet,
         avatar: tweetAvatar
     });
-    console.log(req.body)
     res.status(201).send(`"OK"`)
 });
 
 app.get("/tweets", (req, res) => {
     const page = parseInt(req.query.page) //Ok
-    if(page < 1){
+    console.log(page)
+    console.log(page * 10 > tweets.length + 10)
+    if(page < 1 || ((page > 1) && page * 10 >= tweets.length + 10)){
         res.status(400)
-    } // Validação Ok
+    } 
     let tenTweets = tweets;
     if(tenTweets.length > 10){
-        const first = tweets.length - (page * 10);
-        const last = tweets.length - ((page - 1) * 10);
-        tenTweets = tenTweets.slice(first, last);
-    }
-    if(page === 1 || page * 10 < tweets.length + 10){
-        res.send(tenTweets.slice().reverse())//O Slice é para fazer uma "cópia" do array original e depois reverter para não alterar a array original
-    } //Para não conseguir ficar atualizando!
-
+        function lastTen(page){
+            let first = tweets.length - (page * 10)
+            let last = tweets.length - ((page - 1) * 10)
+            if(first < 0){
+                first = 0;
+            }
+            if(last < 0){
+                last = 0;
+            }
+            return({
+                first: first,
+                last: last,
+            })
+        }
+        const renderLimiter = lastTen(page);
+        tenTweets = tenTweets.slice(renderLimiter.first, renderLimiter.last);
+        console.log(tenTweets)
+    }  
+    res.send(tenTweets.slice().reverse())//O Slice é para fazer uma "cópia" do array original e depois reverter para não alterar a array original
 });
 
 app.get("/tweets/:USERNAME", (req, res) => {
