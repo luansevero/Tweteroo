@@ -17,16 +17,15 @@ function simpleValidation(req){
 }
 
 app.post("/sign-up", (req, res) => {
-    if(simpleValidation(req.body) || req.body.avatar !== ""){
+    if(simpleValidation(req.body) || req.body.avatar == ""){
         res.sendStatus(400)
     };
-    
     usuarios.push(req.body);
     res.status(201).send(`"OK"`)
 });
 
 app.post("/tweets", (req, res) => {
-    if(simpleValidation(req.body) || req.body.tweet !== ""){
+    if(simpleValidation(req.body) && req.body.tweet !== ""){
         res.sendStatus(400)
     };
     const tweetAvatar = usuarios[usuarios.length - 1].avatar
@@ -40,8 +39,6 @@ app.post("/tweets", (req, res) => {
 
 app.get("/tweets", (req, res) => {
     const page = parseInt(req.query.page) //Ok
-    console.log(page)
-    console.log(page * 10 > tweets.length + 10)
     if(page < 1 || ((page > 1) && page * 10 >= tweets.length + 10)){
         res.status(400)
     } 
@@ -63,9 +60,8 @@ app.get("/tweets", (req, res) => {
         }
         const renderLimiter = lastTen(page);
         tenTweets = tenTweets.slice(renderLimiter.first, renderLimiter.last);
-        console.log(tenTweets)
     }  
-    res.send(tenTweets.slice().reverse())//O Slice é para fazer uma "cópia" do array original e depois reverter para não alterar a array original
+    res.send(tenTweets.slice().reverse())
 });
 
 app.get("/tweets/:USERNAME", (req, res) => {
